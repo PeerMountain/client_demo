@@ -6,23 +6,23 @@ from crypto import AESKey, Address
 from serialization import MsgpackSerialize
 
 
-MessageType = Enum("MessageType", "System Registration Assertion Attestation Service Delegations")
-
-
 class BodyType(Enum):
-    """ A single enum to make serialization easy """  
-    System_Checkpoint = auto()
-    Registration_Invitation = auto() 
-    Registration_Registration = auto()
-    Registration_Delegation = auto()
-    Assertion_Assertion = auto()
-    Attestation_DirectAttestation = auto()
-    Attestation_VerificationRequest = auto()
-    Service_ServiceOffering = auto()
-    Service_ServiceRequest = auto()
-    Service_AmendmentRequest = auto() 
-    Delegations_Delegation0 = auto()
-    Delegations_Delegation1 = auto()
+    Checkpoint = auto()
+    InviteRegistration = auto() 
+    RegistrationRequest = auto()
+    DelegatePersona = auto()
+    Backup = auto()
+    Recover = auto()
+    Assertion = auto()
+    Attestation = auto()
+    VerificationRequest = auto()
+    ServiceOffering = auto()
+    ServiceRegistration = auto()
+    AmendmentRequest = auto() 
+    ServiceSubscription = auto()
+    ServiceTermination = auto()
+    Delegation = auto()
+    Validation = auto()
 
 
 
@@ -70,7 +70,6 @@ class Message():
 @dataclass(frozen=True)
 class MessageEnveloppe():
     messageHash: bytes
-    messageType: MessageType
     dossierHash: bytes # hash of the DossierSalt?
     senderAddr: Address
     messageSig: bytes
@@ -233,38 +232,23 @@ class Rejection(AttestationDetail):
     rejectReason: str
 
 
-def GetMessageAndBodyType(message_body):
-    ''' 
-        MessageType = Enum("MessageType", "System Registration Assertion Attestation Service Delegations")
-        
-        
-        class BodyType(Enum):
-            System_Checkpoint = auto()
-            Registration_Invitation = auto() 
-            Registration_Delegation = auto()
-            Assertion_Assertion = auto()
-            Attestation_DirectAttestation = auto()
-            Attestation_VerificationRequest = auto()
-            Service_ServiceOffering = auto()
-            Service_ServiceRequest = auto()
-            Service_AmendmentRequest = auto() 
-            Delegations_Delegation0 = auto()
-            Delegations_Delegation1 = auto()
-    '''
+def GetBodyType(message_body):
     objtype = type(message_body)
-    mapping = {ServiceRegistration : (MessageType.Service, BodyType.Service_ServiceOffering),
-               InviteRegistration : (MessageType.Registration, BodyType.Registration_Invitation),
-               RegistrationRequest : (MessageType.Registration, BodyType.Registration_Registration),
-               Assertion: (MessageType.Assertion, BodyType.Assertion_Assertion)}
+    mapping = {ServiceRegistration : BodyType.ServiceRegistration,
+               InviteRegistration : BodyType.InviteRegistration,
+               RegistrationRequest : BodyType.RegistrationRequest,
+               Assertion: BodyType.Assertion}
     return mapping[objtype]
 
 
 
 def GetBodyClass(bodyType):
-    mapping = {BodyType.Service_ServiceOffering: ServiceRegistration ,
-               BodyType.Registration_Invitation: InviteRegistration,
-               BodyType.Registration_Registration : RegistrationRequest,
-               BodyType.Assertion_Assertion : Assertion}
+    mapping = {BodyType.ServiceRegistration: ServiceRegistration ,
+               BodyType.InviteRegistration: InviteRegistration,
+               BodyType.RegistrationRequest : RegistrationRequest,
+               BodyType.Assertion : Assertion}
     return mapping[bodyType]
+
+
 
 

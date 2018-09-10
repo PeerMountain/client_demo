@@ -11,10 +11,10 @@ import os
 from forms import XForm, BooleanField, FileField, get_metadata_dict
 import datetime
 import hashlib
-from model import Address, GetMessageAndBodyType, Message, MessageEnveloppe,\
+from model import Address, Message, MessageEnveloppe,\
     Attestation, ServiceRegistration, ServiceDocument, ServiceAttestation,\
     DestinationType, InviteRegistration, Invitation, RegistrationRequest,\
-    Assertion, BodyType, MessageType, Attachement, MessageAnalysis,\
+    Assertion, BodyType, Attachement, MessageAnalysis,\
     ResearchAnalysis
 from crypto import RSAKey, AESKey
 from serialization import MsgpackSerialize
@@ -44,8 +44,8 @@ XoRbLXdRThjmEaVEb0zxmsiqnEcUCX5eGZB/gYAcZCAbwQ==
 def randbytes_zeros(l):
     return (b"\00" * l)
 
-class MessageSerializationTests(unittest.TestCase):
-    # Inputs for the SerializeMessageBody tests
+class MessageBodySerializationTests(unittest.TestCase):
+    # Input test_Serialization_SerializeMessageBody_ResultIsCorrect 
     @parameterized.expand([
         # ------------- InviteRegistration -------------
         (InviteRegistration(boostrapNode="http://api.bitstamp.com/teleferic",
@@ -119,26 +119,58 @@ class MessageSerializationTests(unittest.TestCase):
         ''' 'These results are verified manually as best as possible, and then ported to different languagues or platforms '''
         # 1/Pack the message as structure. The fieldnames must be sorted alphabetically.
         # Note: some fields are strings, and some are binary (this is important later for msgpack)
-        json_message = MsgpackSerialize.to_struct(messageBody)
+        json_body = MsgpackSerialize.to_struct(messageBody)
         #print (json_message)
         #print (hexlify(MsgpackSerialize.pack(messageBody)))
-        self.assertEqual(json_message, result_json)
+        self.assertEqual(json_body, result_json)
         # 2/  When packed with msgpack we get (in hex):
-        serialized_message = MsgpackSerialize.pack(messageBody)
-        self.assertEqual(serialized_message,  unhexlify(result_hex))
+        serialized_body = MsgpackSerialize.pack(messageBody)
+        self.assertEqual(serialized_body,  unhexlify(result_hex))
+
+
+class MessageSerializationTests(unittest.TestCase):
+    @parameterized.expand([
+        (Message(serviceID=1,
+                 consumerID=2,
+                 dossierSalt="",
+                 bodyType=BodyType.RegistrationRequest,
+                 body=RegistrationRequest(inviteMsgID=b'$<4px\x17\xeb\x89\xea7\xcc\xfd\x0f\xae\x07"\x89\'n\x10l\xb0T\xfb\x95\x161\x94\xe1\xad\xe7\xd3',
+                                          keyProof=b'\x15\x1a\xac(\r\xfd\xdf\x08\xbf\xbeE\xd2\x03\x12\xed\x8e\xffXk\xf6X\xdcl7\xb2\xda\xe0J\x0b%;<\x94f\xc5\xa4\x85\x85\xfb\xc8\x9e2\xaa\x07\xb49\xbcs\xc7\xa9\x0f\xf5\x10\xb5#\xe9;\x92l\x04?\xcf\x7f\xa3\xf1\xe8<\xd6L\xbe\x8c\xd9\x99\x1d\x0e`\xad\x06\xf3\x0fM\rz\xc6\xd6\xcb\x83\x0bp\xd6\xe5i&\x15\x03\xec\x9aO\x14\xb3\r\x9ary\x8a&\xe0Sx\xba\xb2>m\xc2e\x11|\xecyr\xfa\x84\x9d\xfdv\x86\xa0\xf5', 
+                                          inviteName='AccountLevel1', 
+                                          publicKey='30819f300d06092a864886f70d010101050003818d0030818902818100ba9d0818df7381bc730458caa4633e151b892027f020f563a362a0409994b2f9306d84bed3188586454855c6a837003a088728da349a18b571e85144c59174ab9178d7fee6e7b16f5674a7b61041532eec96e2fc086719d5c28fc99deff11800f0995054e9821082446451d4a9c5204a028c512c9ca335a35a04ab735ad95c510203010001', 
+                                          publicNickname='nickname1')),
+            [('body', [('inviteMsgID', b'$<4px\x17\xeb\x89\xea7\xcc\xfd\x0f\xae\x07"\x89\'n\x10l\xb0T\xfb\x95\x161\x94\xe1\xad\xe7\xd3'), ('inviteName', 'AccountLevel1'), ('keyProof', b'\x15\x1a\xac(\r\xfd\xdf\x08\xbf\xbeE\xd2\x03\x12\xed\x8e\xffXk\xf6X\xdcl7\xb2\xda\xe0J\x0b%;<\x94f\xc5\xa4\x85\x85\xfb\xc8\x9e2\xaa\x07\xb49\xbcs\xc7\xa9\x0f\xf5\x10\xb5#\xe9;\x92l\x04?\xcf\x7f\xa3\xf1\xe8<\xd6L\xbe\x8c\xd9\x99\x1d\x0e`\xad\x06\xf3\x0fM\rz\xc6\xd6\xcb\x83\x0bp\xd6\xe5i&\x15\x03\xec\x9aO\x14\xb3\r\x9ary\x8a&\xe0Sx\xba\xb2>m\xc2e\x11|\xecyr\xfa\x84\x9d\xfdv\x86\xa0\xf5'), ('publicKey', '30819f300d06092a864886f70d010101050003818d0030818902818100ba9d0818df7381bc730458caa4633e151b892027f020f563a362a0409994b2f9306d84bed3188586454855c6a837003a088728da349a18b571e85144c59174ab9178d7fee6e7b16f5674a7b61041532eec96e2fc086719d5c28fc99deff11800f0995054e9821082446451d4a9c5204a028c512c9ca335a35a04ab735ad95c510203010001'), ('publicNickname', 'nickname1')]), ('bodyType', 'RegistrationRequest'), ('consumerID', 2), ('dossierSalt', ''), ('serviceID', 1)],
+            '9592a4626f64799592ab696e766974654d73674944c420243c34707817eb89ea37ccfd0fae072289276e106cb054fb95163194e1ade7d392aa696e766974654e616d65ad4163636f756e744c6576656c3192a86b657950726f6f66c480151aac280dfddf08bfbe45d20312ed8eff586bf658dc6c37b2dae04a0b253b3c9466c5a48585fbc89e32aa07b439bc73c7a90ff510b523e93b926c043fcf7fa3f1e83cd64cbe8cd9991d0e60ad06f30f4d0d7ac6d6cb830b70d6e569261503ec9a4f14b30d9a72798a26e05378bab23e6dc265117cec7972fa849dfd7686a0f592a97075626c69634b6579da014433303831396633303064303630393261383634383836663730643031303130313035303030333831386430303330383138393032383138313030626139643038313864663733383162633733303435386361613436333365313531623839323032376630323066353633613336326130343039393934623266393330366438346265643331383835383634353438353563366138333730303361303838373238646133343961313862353731653835313434633539313734616239313738643766656536653762313666353637346137623631303431353332656563393665326663303836373139643563323866633939646566663131383030663039393530353465393832313038323434363435316434613963353230346130323863353132633963613333356133356130346162373335616439356335313032303330313030303192ae7075626c69634e69636b6e616d65a96e69636b6e616d653192a8626f647954797065b3526567697374726174696f6e5265717565737492aa636f6e73756d657249440292ab646f737369657253616c74a092a973657276696365494401'
+        )])
+    def test_Serialization_SerializeMessage_ResultIsCorrect(self, message, expected_json, expected_hex):
+        ''' 'These results are verified manually as best as possible, and then ported to different languagues or platforms '''
+        json_message = MsgpackSerialize.to_struct(message)
+        #print (json_message)
+        #print (hexlify(MsgpackSerialize.pack(message)))
+        self.assertEqual(json_message, expected_json)
+        # 2/  When packed with msgpack we get (in hex):
+        serialized_message = MsgpackSerialize.pack(message)
+        self.assertEqual(serialized_message,  unhexlify(expected_hex))
+
+
+class MessageSignatureTests(unittest.TestCase):
 
     @parameterized.expand([
-        ('9692ac626f6f737472617041646472d923326e506667797348355552774d366d636b6e71774e4567624369394333366f5173645a92ac626f6f73747261704e6f6465d921687474703a2f2f6170692e6269747374616d702e636f6d2f74656c65666572696392aa696e766974654e616d65c42d29c88d786ed68ce6fcb62aa63bf9ab61081d72dc7603a3d323a23268ffaa8b66746cf6168fe66480cd433f478e92ac6f66666572696e6741646472d923326e39684c4c7a68706e3475655248596f4a42746352374a6b6d746356346f6d7a4c4b92ba73657276696365416e6e6f756e63656d656e744d657373616765c4200f2e63df2c59f0b4108d4ae187be24718d9bcaa64903f883d38b9a81d1cca66492b1736572766963654f66666572696e67494401',
-         'a35d156244aaa18e8e151ee90ab3027769804bdf7554c79e7dde985e4ee46f1b6477cc7d858de3bfd1ebd37ddd120b610493596604b357fb024e046be6eb4bbf069fc71cc5037b14441a7e6f1acc4d921938c5090adb2133a45cd414f090c81cea117057aef8ed689c68bccc6994a47318eaad062c7ee41ef6bfdd5fa5133747',
+        ('9592a4626f64799592ab696e766974654d73674944c420243c34707817eb89ea37ccfd0fae072289276e106cb054fb95163194e1ade7d392aa696e766974654e616d65ad4163636f756e744c6576656c3192a86b657950726f6f66c480151aac280dfddf08bfbe45d20312ed8eff586bf658dc6c37b2dae04a0b253b3c9466c5a48585fbc89e32aa07b439bc73c7a90ff510b523e93b926c043fcf7fa3f1e83cd64cbe8cd9991d0e60ad06f30f4d0d7ac6d6cb830b70d6e569261503ec9a4f14b30d9a72798a26e05378bab23e6dc265117cec7972fa849dfd7686a0f592a97075626c69634b6579da014433303831396633303064303630393261383634383836663730643031303130313035303030333831386430303330383138393032383138313030626139643038313864663733383162633733303435386361613436333365313531623839323032376630323066353633613336326130343039393934623266393330366438346265643331383835383634353438353563366138333730303361303838373238646133343961313862353731653835313434633539313734616239313738643766656536653762313666353637346137623631303431353332656563393665326663303836373139643563323866633939646566663131383030663039393530353465393832313038323434363435316434613963353230346130323863353132633963613333356133356130346162373335616439356335313032303330313030303192ae7075626c69634e69636b6e616d65a96e69636b6e616d653192a8626f647954797065b3526567697374726174696f6e5265717565737492aa636f6e73756d657249440292ab646f737369657253616c74a092a973657276696365494401',
+         '91bd0b69a5b849c3e0fdc344c0cb8a15c40b08656b05ba9f27dcc5abc0499cb6ae33135964c900b0cb2fc5d9a8983ae36c6a71f44d8f523a19d12a35880b580861f30810f30e0e158effe94ad84a76f27552c2d342c405a885327228cd317a07085a2853e9396b13a89abef4dfb60d11250009dcb80cc0784de0d440a5576597',
         ),
         ])
     def test_Signature_SignMessage_ResultIsCorrect(self, serialized_message, expected_signature):
         # 3/ Sign using RSASSA-PSS as introduced in PKCS1v2.1 (still compatible with in PKCS1 v2.2)
         # This example is deterministic because our randbytes function returns only zeros:
         signature = example_key1.sign(unhexlify(serialized_message) , randbytes=randbytes_zeros)
+        #print (hexlify(signature))
         self.assertEqual(signature, unhexlify(expected_signature))
 
-        
+ 
+class MessageEncryptionTests(unittest.TestCase):
+
+       
     def test_Encryption_EncryptMessage_ResultIsCorrect(self):
         # 4/ Encrypt the message using AES 256 GCM. We prepend a 16 byte nonce as per pycryptodome recommendation)
         serialized_message = unhexlify('9692ac626f6f737472617041646472d923326e506667797348355552774d366d636b6e71774e4567624369394333366f5173645a92ac626f6f73747261704e6f6465d921687474703a2f2f6170692e6269747374616d702e636f6d2f74656c65666572696392aa696e766974654e616d65c42d29c88d786ed68ce6fcb62aa63bf9ab61081d72dc7603a3d323a23268ffaa8b66746cf6168fe66480cd433f478e92ac6f66666572696e6741646472d923326e39684c4c7a68706e3475655248596f4a42746352374a6b6d746356346f6d7a4c4b92ba73657276696365416e6e6f756e63656d656e744d657373616765c4200f2e63df2c59f0b4108d4ae187be24718d9bcaa64903f883d38b9a81d1cca66492b1736572766963654f66666572696e67494401') 

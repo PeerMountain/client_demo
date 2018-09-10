@@ -11,10 +11,10 @@ import os
 from forms import XForm, BooleanField, FileField, get_metadata_dict
 import datetime
 import hashlib
-from model import Address, GetMessageAndBodyType, Message, MessageEnveloppe,\
+from model import Address, GetBodyType, Message, MessageEnveloppe,\
     Attestation, ServiceRegistration, ServiceDocument, ServiceAttestation,\
     DestinationType, InviteRegistration, Invitation, RegistrationRequest,\
-    Assertion, BodyType, MessageType, Attachement, MessageAnalysis,\
+    Assertion, BodyType, Attachement, MessageAnalysis,\
     ResearchAnalysis
 from crypto import RSAKey, AESKey
 from serialization import MsgpackSerialize
@@ -78,7 +78,7 @@ class TelefericServer():
             # The message is for the teleferic server  
             message = enveloppe.decrypt(self.server_address, self.teleferic_key)
             # No signature check yet as this is just a proof of concept
-            if enveloppe.messageType == MessageType.Registration and message.bodyType == BodyType.Registration_Registration:
+            if message.bodyType == BodyType.RegistrationRequest:
                 # New Registration must be added to the public key database
                 public_key = RSAKey.import_public_key_hex(message.body.publicKey)
                 self.public_keys[public_key.address()] = public_key
@@ -161,7 +161,7 @@ class TelefericClient():
             receiver_address, receiverID = None, None
         sender_address = sender_key.address()
         dossierSalt = self.salt_storage.getDossierSalt(sender_address, senderID, receiver_address, receiverID)
-        messageType, bodyType = GetMessageAndBodyType(message_body)
+        bodyType = GetBodyType(message_body)
         message = Message(serviceID,
                           receiverID,
                           dossierSalt,
@@ -188,7 +188,6 @@ class TelefericClient():
         dossierHash = makeDossierHash(sender_address, senderID, receiver_address, receiverID, dossierSalt)
         
         enveloppe = MessageEnveloppe(messageHash, # hash of encrypted body
-                        messageType,
                         dossierHash, # hash of the SerciceAddress+ServiceId+ConsumerAddres+ConsumerId+DossierSalt
                         sender_key.address(),
                         messageSig, # signature of the unencrypted message
