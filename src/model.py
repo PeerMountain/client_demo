@@ -57,7 +57,16 @@ class Message():
     bodyType: BodyType
     body: MessageBody
 
-    
+    @classmethod
+    def from_struct(cls, data):
+        datadict = dict(data)
+        # Deserialize Body based on BodyClass
+        bodyType = MsgpackSerialize.from_struct(BodyType, datadict["bodyType"])
+        bodyClass = GetBodyClass(bodyType)
+        body = MsgpackSerialize.from_struct(bodyClass, datadict["body"])
+        return cls(datadict["serviceID"], datadict["consumerID"], datadict["dossierSalt"], 
+                   bodyType, body)
+        
 @dataclass(frozen=True)
 class MessageEnveloppe():
     messageHash: bytes
@@ -76,9 +85,7 @@ class MessageEnveloppe():
         aeskeydata = key.decrypt(encrypted_key)
         aeskey = AESKey(aeskeydata)
         message = MsgpackSerialize.unpack(Message, aeskey.decrypt(self.message))
-        bodyClass = GetBodyClass(message.bodyType)
-        body = MsgpackSerialize.unpack(bodyClass, message.body)
-        return (message, body)
+        return message
 
 
 DestinationType = Enum("DestinationType", "SendConsumer SendServiceProvider SendBoth")

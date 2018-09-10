@@ -44,7 +44,7 @@ class MsgpackSerialize():
             return objtype.from_struct(data)
         elif hasattr(objtype, "__dataclass_fields__"):
             initilizers = {}
-            for k, value in zip(sorted(objtype.__dataclass_fields__.keys()), data):
+            for (k, value) in data: 
                 field = objtype.__dataclass_fields__[k]
                 #for k, field in objtype.__dataclass_fields__.items():
                 initilizers[k] = MsgpackSerialize.from_struct(field.type, value)

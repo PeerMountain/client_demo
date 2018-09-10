@@ -76,11 +76,11 @@ class TelefericServer():
         packed = MsgpackSerialize.pack(enveloppe)
         if self.server_address in enveloppe.ACL:
             # The message is for the teleferic server  
-            message, body = enveloppe.decrypt(self.server_address, self.teleferic_key)
+            message = enveloppe.decrypt(self.server_address, self.teleferic_key)
             # No signature check yet as this is just a proof of concept
             if enveloppe.messageType == MessageType.Registration and message.bodyType == BodyType.Registration_Registration:
                 # New Registration must be added to the public key database
-                public_key = RSAKey.import_public_key_hex(body.publicKey)
+                public_key = RSAKey.import_public_key_hex(message.body.publicKey)
                 self.public_keys[public_key.address()] = public_key
         
         return SHA256.new(packed).digest()
@@ -112,7 +112,8 @@ class AttestationEngine():
         
     def get_attestation(self, assertion_enveloppe):
         # There are no fields to describe which assertions are requested? We will just make all possible
-        message, assertion = assertion_enveloppe.decrypt(self.address, self.key)
+        message = assertion_enveloppe.decrypt(self.address, self.key)
+        assertion = message.body
         attestation_entries = []
         for a in assertion_enveloppe.attachements:
             key = AESKey(assertion.containerKey)
@@ -214,7 +215,6 @@ def main_scenario():
                                                           KYC3.key.address(): KYC3.key.public_key()})
     teleferic = TelefericClient(teleferic_server)
     
-    
     # Bitstamp defines a Service 
     serviceAnnouncementMessage = ServiceRegistration(
         "exchange",
@@ -254,7 +254,6 @@ def main_scenario():
     
     print('BEGIN----------------')
     inviteMsgID = teleferic.send_message(service_key, 0, [], invitation_registration)
-    exit()
     # We receive an invitation
     invitation = Invitation("http://api.bitstamp.com/teleferic",
                             teleferic.get_teleferic_address(),
@@ -264,7 +263,7 @@ def main_scenario():
                             inviteNameEncrypted,
                             inviteMsgID,
                             inviteKey)
-    
+    print (invitation)
     # We setup an RSA key
     customer_key = RSAKey.load_or_generate('client.pem', 1024)
     customer_address = customer_key.address()
@@ -278,6 +277,7 @@ def main_scenario():
             customer_key.public_key_hex(), # Persona’s public key
             publicNickname,
     )
+    print (registration)
     teleferic.send_message(customer_key, 0, [(teleferic.get_teleferic_address(), 0)], registration, [])
     # We prepare the required forms
     doc1, doc2, doc3 = serviceAnnouncementMessage.documents
@@ -307,7 +307,7 @@ def main_scenario():
                           datetime.date(2020, 1, 1), # Unix timestamp, 0 or -1 ZULU time, 0 for none, -1 for indefinite, -2 for undetermined
                           key.key, # AES-256 key Decryption key for container
                           merge_dicts(metadict1, metadict2, metadict3))
-    
+    print (assertion)
     metahashes = set(metahashes1 +  metahashes2 + metahashes3)
     assertion_enveloppe = teleferic.make_enveloppe(customer_key, 0, [(KYC3.address, 0)], assertion, [attachement1,
                                                                                                      attachement2,
