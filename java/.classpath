@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="lib" path="msgpack-core-0.8.16.jar"/>
+	<classpathentry kind="lib" path="bcpkix-jdk15on-1.60.jar"/>
+	<classpathentry kind="lib" path="bcprov-jdk15on-160.jar"/>
+	<classpathentry kind="lib" path="bcprov-ext-jdk15on-160.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
