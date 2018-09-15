@@ -1,11 +1,16 @@
 package cryptotest;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.msgpack.core.MessageBufferPacker;
+import org.msgpack.core.MessagePack;
+import org.msgpack.value.Value;
 
 import cryptotest.model.BodyType;
 
@@ -29,8 +34,10 @@ public class Serialization {
 	    Class cls = obj.getClass();
 		
 		Object res = ToStructFromObject(obj);
-		System.out.println("res");
-	    System.out.println(res);
+		/*System.out.println("res");
+	    System.out.println(obj);
+	    System.out.println(cls.isPrimitive());
+	    System.out.println(cls.toString());*/
 	    if (res != null)
 			return res;
 	    if (cls.isEnum()) {
@@ -39,7 +46,7 @@ public class Serialization {
 	    else if (cls == byte[].class) {
 	    	return (obj);
 	    }
-	    else if (cls.isPrimitive()) {
+	    else if (Utils.isPrimitiveOrWrapped(cls)) {
 	    	return (obj);
 	    } else { // Class
 	    	List<Object> result = new ArrayList<Object>(); 
@@ -55,13 +62,51 @@ public class Serialization {
 	    			continue;
 	    		}
 	    		l.add(field.getName());
-	    		System.out.println(value);
 	    	    l.add(Serialization.ToStruct(value));
 	    		result.add(l);
 	    	}
 	    	// List fields and append to result list result.append((k, MsgpackSerialize.to_struct(v)))
 	    	return result;
 	    }
+	}
+	public static void PackToBuffer(MessageBufferPacker packer, Object obj) throws Exception {
+	    if(obj instanceof String) {
+	        packer.packString((String)obj);
+	    }
+	    else if(obj instanceof Integer) {
+	        packer.packInt((Integer) obj);
+	    }
+	    else if(obj instanceof Boolean) {
+	        packer.packBoolean((boolean)obj);
+	    }
+	    else if(obj instanceof Double) {
+	        packer.packDouble((double)obj);
+	    }
+	    else if(obj instanceof Long) {
+	        packer.packLong((long)obj);
+	    }
+	    else if(obj instanceof byte[]) {
+	    	byte[] bytes = (byte[])obj;
+
+	        packer.packBinaryHeader(bytes.length);
+	        packer.writePayload(bytes);
+	    }
+	    else if(obj instanceof List) {
+	    	
+	    	List<Object> list = (List<Object>)(obj);
+	    	packer.packArrayHeader(list.size());
+	    	for (Object o: list) {
+	    		PackToBuffer(packer, o);
+	    	}
+	    }
+	
+	}
+	public static byte[] Pack(Object obj) throws Exception {
+		MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
+
+		Object res = ToStruct(obj);
+		PackToBuffer(packer, res);
+		return packer.toByteArray();
 	}
 	/* @staticmethod
     def to_struct(obj):

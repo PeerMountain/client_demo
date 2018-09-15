@@ -14,4 +14,18 @@ public class Utils {
 		}
 		return false;
 	}
+	public static boolean isPrimitiveOrWrapped(Class<?> cls) {
+		if (cls.isPrimitive())
+			return true;
+	    return cls.equals(Boolean.class) || 
+		       cls.equals(String.class) || 
+	    	   cls.equals(Integer.class) ||
+	    	   cls.equals(Character.class) ||
+	    	   cls.equals(Byte.class) ||
+	    	   cls.equals(Short.class) ||
+	    	   cls.equals(Double.class) ||
+	    	   cls.equals(Long.class) ||
+	    	   cls.equals(Float.class);
+	}
+	
 }
