@@ -1,12 +1,67 @@
+package cryptotest;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import cryptotest.model.BodyType;
 
 public class Serialization {
 	
+	public static Object ToStructFromObject(Object obj) {
+		Class cls = obj.getClass();
+		Method m;
+		try {
+    		m = cls.getMethod("ToStruct", null);
+    	} catch (NoSuchMethodException e) {
+    		return (null);
+    	}
+		try {
+	    	return (m.invoke(obj));
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			return null;
+		}
+	}
 	public static Object ToStruct(Object obj) {
 	    Class cls = obj.getClass();
+		
+		Object res = ToStructFromObject(obj);
+		System.out.println("res");
+	    System.out.println(res);
+	    if (res != null)
+			return res;
 	    if (cls.isEnum()) {
-	    	return ("uhu");
+	    	return ((Enum)obj).name();
 	    }
-	    return ("");
+	    else if (cls == byte[].class) {
+	    	return (obj);
+	    }
+	    else if (cls.isPrimitive()) {
+	    	return (obj);
+	    } else { // Class
+	    	List<Object> result = new ArrayList<Object>(); 
+	    	Field[] allFields = cls.getDeclaredFields();
+	    	Arrays.sort(allFields, (a,b) -> a.getName().compareTo(b.getName()));
+
+	    	for (Field field : allFields) {
+	    		List<Object> l = new ArrayList<Object>();
+	    		Object value;
+	    		try {
+	    			value = field.get(obj);
+	    		} catch (IllegalAccessException e) {
+	    			continue;
+	    		}
+	    		l.add(field.getName());
+	    		System.out.println(value);
+	    	    l.add(Serialization.ToStruct(value));
+	    		result.add(l);
+	    	}
+	    	// List fields and append to result list result.append((k, MsgpackSerialize.to_struct(v)))
+	    	return result;
+	    }
 	}
 	/* @staticmethod
     def to_struct(obj):

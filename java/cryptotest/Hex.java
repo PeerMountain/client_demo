@@ -1,7 +1,7 @@
-package cryptotest.model;
+package cryptotest;
 
 public class Hex {
-	public static byte[] hex2bytes(String s) {
+	public static byte[] ToByteArray(String s) {
 	    int len = s.length();
 	    byte[] data = new byte[len / 2];
 	    for (int i = 0; i < len; i += 2) {
@@ -9,6 +9,12 @@ public class Hex {
 	                             + Character.digit(s.charAt(i+1), 16));
 	    }
 	    return data;
+	}
+	public static String FromByteArray(byte[] a) {
+		   StringBuilder sb = new StringBuilder(a.length * 2);
+		   for(byte b: a)
+		      sb.append(String.format("%02x", b));
+		   return sb.toString();
 	}
 
 }

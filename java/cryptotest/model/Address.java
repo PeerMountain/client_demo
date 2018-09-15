@@ -5,4 +5,7 @@ public class Address {
 	public Address(String address) {
 		this.address = address;
 	}
+	public Object ToStruct() {
+		return address;
+	}
 }
