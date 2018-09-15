@@ -8,3 +8,9 @@
 /Attachement.class
 /Address.class
 /Hex.class
+/ServiceDocument.class
+/ServiceAttestation.class
+/DestinationType.class
+/AssertionMetadata.class
+/AttestationEntry.class
+/AttestationDetail.class
