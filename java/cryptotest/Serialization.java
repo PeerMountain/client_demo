@@ -64,7 +64,7 @@ public class Serialization {
 	    	return (obj);
 	    } else { // Class
 	    	List<Object> result = new ArrayList<Object>(); 
-	    	Field[] allFields = cls.getDeclaredFields();
+	    	Field[] allFields = cls.getFields();
 	    	Arrays.sort(allFields, (a,b) -> a.getName().compareTo(b.getName()));
 
 	    	for (Field field : allFields) {
