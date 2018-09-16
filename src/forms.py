@@ -206,6 +206,8 @@ class XForm():
     
     def __post_init__(self):
         self.fields = []
+        '''
+        TODO: reintroduce standard vs non-standard fields in Tests
         stdfields_by_name = {field.field.name: field.field for field in StandardFields}
         for f in self.fields_init:
             if type(f) is str:
@@ -214,7 +216,7 @@ class XForm():
                 self.fields.append(stdfields_by_name[f])
             else:
                 assert isinstance(f, Field)
-                self.fields.append(f)
+                self.fields.append(f)'''
          
     def to_xform(self):
         root = Element('xforms')

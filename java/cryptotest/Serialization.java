@@ -38,10 +38,10 @@ public class Serialization {
 	    Class cls = obj.getClass();
 		
 		Object res = ToStructFromObject(obj);
-		System.out.println("res");
+		/*System.out.println("res");
 	    System.out.println(obj);
 	    System.out.println(cls.isPrimitive());
-	    System.out.println(cls.toString());
+	    System.out.println(cls.toString());*/
 	    if (res != null)
 			return res;
 	    if (cls.isEnum()) {
@@ -76,8 +76,8 @@ public class Serialization {
 	    			continue;
 	    		}
 	    		l.add(field.getName());
-	    		System.out.println(field.getName());
-	    		System.out.println(value);
+	    		//System.out.println(field.getName());
+	    		//System.out.println(value);
 	    	    l.add(Serialization.ToStruct(value));
 	    		result.add(l);
 	    	}
@@ -86,7 +86,10 @@ public class Serialization {
 	    }
 	}
 	public static void PackToBuffer(MessageBufferPacker packer, Object obj) throws Exception {
-	    if(obj instanceof String) {
+	    if(obj == null ) {
+	    	packer.packNil();
+	    }
+	    else if(obj instanceof String) {
 	        packer.packString((String)obj);
 	    }
 	    else if(obj instanceof Integer) {
