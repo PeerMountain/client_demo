@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,20 +33,32 @@ public class Serialization {
 		}
 	}
 	public static Object ToStruct(Object obj) {
+		if (obj == null)
+			return obj;
 	    Class cls = obj.getClass();
 		
 		Object res = ToStructFromObject(obj);
-		/*System.out.println("res");
+		System.out.println("res");
 	    System.out.println(obj);
 	    System.out.println(cls.isPrimitive());
-	    System.out.println(cls.toString());*/
+	    System.out.println(cls.toString());
 	    if (res != null)
 			return res;
 	    if (cls.isEnum()) {
 	    	return ((Enum)obj).name();
 	    }
+	    if (obj instanceof LocalDate) {
+	    	return ((LocalDate)obj).format(DateTimeFormatter.ISO_DATE);
+	    }
 	    else if (cls == byte[].class) {
 	    	return (obj);
+	    }
+	    else if (cls.isArray()) {
+	    	List<Object> result = new ArrayList<Object>(); 
+	    	for (Object o : (Object[])obj) {
+	    		result.add(Serialization.ToStruct(o));
+	    	}
+	    	return result;
 	    }
 	    else if (Utils.isPrimitiveOrWrapped(cls)) {
 	    	return (obj);
@@ -62,6 +76,8 @@ public class Serialization {
 	    			continue;
 	    		}
 	    		l.add(field.getName());
+	    		System.out.println(field.getName());
+	    		System.out.println(value);
 	    	    l.add(Serialization.ToStruct(value));
 	    		result.add(l);
 	    	}

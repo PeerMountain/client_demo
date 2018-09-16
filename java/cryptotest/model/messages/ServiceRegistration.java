@@ -16,11 +16,11 @@ public class ServiceRegistration {
 	public String serviceMarketing_name;
 	public String serviceMarketing_description;
 	public byte[] serviceMarketing_image;
-	public List<ServiceDocument> documents;
+	public ServiceDocument[] documents;
 
 	public ServiceRegistration(String serviceId, Address servicePMAddress, LocalDate serviceStartDate, 
 			LocalDate serviceEndDate, String serviceMarketing_name, String serviceMarketing_description, 
-			byte[] serviceMarketing_image, List<ServiceDocument> documents) {
+			byte[] serviceMarketing_image, ServiceDocument[] documents) {
 		this.serviceId = serviceId;
 		this.servicePMAddress = servicePMAddress;
 		this.serviceStartDate = serviceStartDate;
