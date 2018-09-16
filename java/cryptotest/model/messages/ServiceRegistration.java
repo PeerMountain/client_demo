@@ -10,7 +10,7 @@ import cryptotest.model.ServiceDocument;
 
 public class ServiceRegistration {
 	public String serviceId;
-	public String servicePMAddress;
+	public Address servicePMAddress;
 	public LocalDate serviceStartDate;
 	public LocalDate serviceEndDate;
 	public String serviceMarketing_name;
@@ -18,7 +18,7 @@ public class ServiceRegistration {
 	public byte[] serviceMarketing_image;
 	public List<ServiceDocument> documents;
 
-	public ServiceRegistration(String serviceId, String servicePMAddress, LocalDate serviceStartDate, 
+	public ServiceRegistration(String serviceId, Address servicePMAddress, LocalDate serviceStartDate, 
 			LocalDate serviceEndDate, String serviceMarketing_name, String serviceMarketing_description, 
 			byte[] serviceMarketing_image, List<ServiceDocument> documents) {
 		this.serviceId = serviceId;

@@ -74,9 +74,9 @@ class MessageBodySerializationTests(unittest.TestCase):
                                              0)]),
                     
           ServiceDocument(XForm(["Name", "Surname", "AddressLine1", "AddressLine2", "PostalCode",
-                                "City", "Country", "Email", "PhoneNumber"]),
+                                 "City", "Country", "Email", "PhoneNumber"]),
                           [ServiceAttestation(Address('2n6HW4uS6Wqq8e4vgkQHnniCu3yrhvjHHHF'), ["AddressValidity", "KnownCustomer", "ResidenceClassifier"]), ]),
-          ServiceDocument(XForm([BooleanField("TermsAndConditions")]),
+          ServiceDocument(XForm(["TermsAndConditions"]),
                           []),
          ]),
         [('documents', [[('requiredAttestations', [[('aePMAddress', '2n6HW4uS6Wqq8e4vgkQHnniCu3yrhvjHHHF'), ('attestation_list', ['MRZ', 'Fraud', 'PEP', 'Sanction', 'SanctionCountry', 'CountryRisk', 'BlackList']), ('destinationPMAddress', 'SendServiceProvider'), ('updateFrequencyInDays', 0)]]), ('xform', [('fields_init', ['IdentityDocument'])])], [('requiredAttestations', [[('aePMAddress', '2n6HW4uS6Wqq8e4vgkQHnniCu3yrhvjHHHF'), ('attestation_list', ['AddressValidity', 'KnownCustomer', 'ResidenceClassifier']), ('destinationPMAddress', 'SendServiceProvider'), ('updateFrequencyInDays', None)]]), ('xform', [('fields_init', ['Name', 'Surname', 'AddressLine1', 'AddressLine2', 'PostalCode', 'City', 'Country', 'Email', 'PhoneNumber'])])], [('requiredAttestations', []), ('xform', [('fields_init', [[('description', None), ('name', 'TermsAndConditions')]])])]]), ('serviceEndDate', None), ('serviceId', 'exchange'), ('serviceMarketing_description', 'Cryptocurrency Exchange'), ('serviceMarketing_image', b''), ('serviceMarketing_name', 'Bitstamp'), ('servicePMAddress', '2n9hLLzhpn4ueRHYoJBtcR7JkmtcV4omzLK'), ('serviceStartDate', '2018-01-01')],
