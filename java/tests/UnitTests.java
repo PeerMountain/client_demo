@@ -29,18 +29,6 @@ import cryptotest.model.messages.ServiceRegistration;
 
 public class UnitTests {
     @Test
-    public void testRSA_PKCS1_Sign() {
-    	InviteRegistration r = new InviteRegistration(
-    			"http://api.bitstamp.com/teleferic",
-                new Address("2nPfgysH5URwM6mcknqwNEgbCi9C36oQsdZ"),
-                new Address("2n9hLLzhpn4ueRHYoJBtcR7JkmtcV4omzLK"),
-                Hex.ToByteArray("0f2e63df2c59f0b4108d4ae187be24718d9bcaa64903f883d38b9a81d1cca664"),
-                1,
-                Hex.ToByteArray("29c88d786ed68ce6fcb62aa63bf9ab61081d72dc7603a3d323a23268ffaa8b66746cf6168fe66480cd433f478e"));
-    	System.out.println("test 1");
-    }
-
-    @Test
     public void testSerialization_Enum() {
     	String r = (String)Serialization.ToStruct(BodyType.InviteRegistration);
     	

@@ -1,4 +1,4 @@
-package cryptotest;
+package tests;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -9,15 +9,22 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Paths;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.junit.jupiter.api.Test;
+
+import cryptotest.Hex;
+
 import org.bouncycastle.openssl.PEMKeyPair;
 import java.security.PrivateKey;
 
-public class MainTest {
+public class RSATests {
 
 	static String readFile(String path, Charset encoding) throws IOException 
 	{
@@ -25,13 +32,13 @@ public class MainTest {
 	  return new String(encoded, encoding);
 	}
 
-    public static void main(String[] args) throws Exception {
-        // Load file in PKCS1 format 
-		File privateKeyFile = new File("client.pem"); // private key file in PEM format
+    @Test
+    public void test_SignRSA_PKCS1_v1_5() throws Exception {
+        // Load file in PKCS1 format (but not PKCS8 which might look similar)
+    	File privateKeyFile = new File("./tests/client.pem"); // private key file in PEM format
 		PEMParser pemParser = new PEMParser(new FileReader(privateKeyFile));
 		Object obj = pemParser.readObject();
 
-		System.out.println(obj.toString());
         if (!(obj instanceof PEMKeyPair)) {
 			throw new Exception("Error in private key file");
 		}
@@ -49,8 +56,8 @@ public class MainTest {
 
         String sig = Base64.getEncoder().encodeToString(signature);
         
-        System.out.println(sig);
-        System.out.println(sig.equals("oEH+z0bebQLMAtGiRlqdBUD0Q7RriHVM0JDLOMQhQzrs3CJstIzyMDKJlqXIhHkoiUfZEC6cd3fvGmd2heubPkpWtNsZqvc1sMd63Ia238NVzubFelM9BtZpc/aGzH0lQMyaUexum8a4eN3sdNNaltVTFelawgJcnfIeFIMoNEI="));
+    	// The we sign using PKCS1 v1.5 which is deterministic so there is no need to mock random
+        assertEquals(sig, "oEH+z0bebQLMAtGiRlqdBUD0Q7RriHVM0JDLOMQhQzrs3CJstIzyMDKJlqXIhHkoiUfZEC6cd3fvGmd2heubPkpWtNsZqvc1sMd63Ia238NVzubFelM9BtZpc/aGzH0lQMyaUexum8a4eN3sdNNaltVTFelawgJcnfIeFIMoNEI=");
    	}
 	
 }
