@@ -8,7 +8,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
@@ -44,19 +49,37 @@ public class Serialization {
 	    System.out.println(cls.toString());*/
 	    if (res != null)
 			return res;
-	    if (cls.isEnum()) {
+	    else if (cls.isEnum()) {
 	    	return ((Enum)obj).name();
 	    }
-	    if (obj instanceof LocalDate) {
+	    else if (obj instanceof LocalDate) {
 	    	return ((LocalDate)obj).format(DateTimeFormatter.ISO_DATE);
 	    }
-	    else if (cls == byte[].class) {
+	    else if (cls == byte[].class) { // byte arrays
 	    	return (obj);
 	    }
 	    else if (cls.isArray()) {
 	    	List<Object> result = new ArrayList<Object>(); 
 	    	for (Object o : (Object[])obj) {
 	    		result.add(Serialization.ToStruct(o));
+	    	}
+	    	return result;
+	    }
+	    else if (obj instanceof Map) {
+	    	//we only support Maps with String keys for the moment (due to sorting)
+	    	Map<String, Object> map = (Map<String, Object>)obj;
+	    	Set< Entry<String, Object> > entries = map.entrySet();
+	    	//convert to array and sort
+	    	Entry<String, Object>[] entryList = entries.toArray(new Entry[entries.size()]);
+	    	Arrays.sort(entryList, (a,b) -> a.getKey().compareTo(b.getKey()));
+	    	
+	    	List<Object> result = new ArrayList<Object>(); 
+	    	for (Entry<String, Object> entry : entryList) {
+	    		List<Object> entry_elm = new ArrayList<Object>(); 
+		    	
+	    		entry_elm.add(entry.getKey());
+	    		entry_elm.add(Serialization.ToStruct(entry.getValue()));
+	    		result.add(entry_elm);
 	    	}
 	    	return result;
 	    }

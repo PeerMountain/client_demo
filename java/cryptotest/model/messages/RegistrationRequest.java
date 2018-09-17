@@ -8,12 +8,12 @@ import cryptotest.model.ServiceDocument;
 public class RegistrationRequest {
 	public byte[] inviteMsgID;
 	public byte[] keyProof;
-	public byte[] inviteName;
-	public byte[] publicKey;
-	public byte[] publicNickname;
+	public String inviteName;
+	public String publicKey;
+	public String publicNickname;
 
-	public RegistrationRequest(byte[] inviteMsgID, byte[] keyProof, byte[] inviteName, 
-			byte[] publicKey, byte[] publicNickname) {
+	public RegistrationRequest(byte[] inviteMsgID, byte[] keyProof, String inviteName, 
+			String publicKey, String publicNickname) {
 		this.inviteMsgID = inviteMsgID;
 		this.keyProof = keyProof;
 		this.inviteName = inviteName;
