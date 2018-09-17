@@ -3,9 +3,10 @@ package cryptotest.model.messages;
 import java.time.LocalDate;
 import java.util.List;
 
+import cryptotest.model.MessageBody;
 import cryptotest.model.ServiceDocument;
 
-public class RegistrationRequest {
+public class RegistrationRequest extends MessageBody {
 	public byte[] inviteMsgID;
 	public byte[] keyProof;
 	public String inviteName;

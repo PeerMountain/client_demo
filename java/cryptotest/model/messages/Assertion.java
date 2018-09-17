@@ -5,8 +5,9 @@ import java.util.Map;
 
 import cryptotest.model.Address;
 import cryptotest.model.AssertionMetadata;
+import cryptotest.model.MessageBody;
 
-public class Assertion {
+public class Assertion extends MessageBody {
 	public Address subjectAddr;
 	public LocalDate validUntil;
 	public LocalDate retainUntil;

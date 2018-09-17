@@ -6,9 +6,10 @@ import java.util.List;
 
 import cryptotest.model.Address;
 import cryptotest.model.DestinationType;
+import cryptotest.model.MessageBody;
 import cryptotest.model.ServiceDocument;
 
-public class ServiceRegistration {
+public class ServiceRegistration extends MessageBody {
 	public String serviceId;
 	public Address servicePMAddress;
 	public LocalDate serviceStartDate;
